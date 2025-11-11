@@ -114,7 +114,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': './logs/password_change.log' if DEBUG else '/var/logs/changpassgov/password_change.log',
+            'filename': './logs/password_change.log' if DEBUG else '/var/log/changpassgov/password_change.log',
             'maxBytes': 1024 * 1024 * 10,  # 10MB
             'backupCount': 5,
             'formatter': 'verbose',
