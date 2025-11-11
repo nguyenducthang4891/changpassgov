@@ -15,7 +15,7 @@ SETTINGS_DIR = Path(__file__).resolve().parent
 
 SECRET_KEY = 'your-secret-key-here-change-in-production'
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = False
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -74,7 +74,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://default:123456@10.59.91.208:6379/15',
+        'LOCATION': 'redis://default:123456@10.59.91.208:6379/15' if DEBUG else 'redis://default:123456@192.168.0.161:6379/15',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
