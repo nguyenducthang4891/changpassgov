@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, JsonResponse
 from django.template.response import TemplateResponse
 from django.contrib import messages
 from app.decorators import rate_limit
@@ -82,19 +82,31 @@ async def login_view(request):
         return HttpResponseNotAllowed(["GET", "POST"])
 
     form = LoginForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        email = form.cleaned_data["email"]
-        password = form.cleaned_data["password"]
-        domain = extract_domain(email)
-        hostname = f"mail.{domain}"
 
-        rs = await authenticate(domain, email, password)
-        if rs.get("success"):
-            zm_auth_token = rs["authToken"]
-            return redirect(f"https://{hostname}/login?zm_auth_token={zm_auth_token}&domain={domain}")
+    if request.method == "POST":
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            password = form.cleaned_data["password"]
+            domain = extract_domain(email)
+            hostname = f"mail.{domain}"
 
-        messages.error(request, "Email hoặc mật khẩu không hợp lệ.")
-    # else:
-    #     messages.error(request, form.errors)
+            rs = await authenticate(domain, email, password)
+            if rs.get("success"):
+                zm_auth_token = rs["authToken"]
+                # Trả JSON thay vì redirect
+                return JsonResponse({
+                    "success": True,
+                    "redirect_url": f"https://{hostname}/login?zm_auth_token={zm_auth_token}&domain={domain}"
+                })
 
+            return JsonResponse({
+                "success": False,
+                "message": "Email hoặc mật khẩu không hợp lệ."
+            })
+        else:
+            # Trả lỗi form validation
+            errors = {field: error[0] for field, error in form.errors.items()}
+            return JsonResponse({"success": False, "errors": errors})
+
+    # GET request → render template
     return TemplateResponse(request, "password_change/login.html", {"form": form})
