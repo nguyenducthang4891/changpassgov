@@ -93,9 +93,9 @@
         .btn-primary {
             background: #0663c5;
             border: none;
-            padding: 0.85rem;
+            padding: 0.5rem;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             border-radius: 10px;
             transition: all 0.3s ease;
         }

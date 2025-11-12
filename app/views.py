@@ -3,15 +3,15 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 
-import aiohttp
-from lxml import etree
-
+from django.http import HttpResponseNotAllowed
+from django.template.response import TemplateResponse
+from django.contrib import messages
 from app.decorators import rate_limit
-from app.utils import extract_domain, call_soap_api, change_password_with_auth
+from app.forms import LoginForm
+from app.utils import extract_domain, call_soap_api, change_password_with_auth, authenticate
 
 
-@require_http_methods(["GET", "POST"])
-@rate_limit(max_attempts=5, window=300)
+@rate_limit(max_attempts=5, window=300, template_name="password_change/change_password.html", form_class=None)
 async def change_password(request):
     """
     View để hiển thị form và xử lý đổi mật khẩu
@@ -70,7 +70,31 @@ async def change_password(request):
     if result['success']:
         messages.success(request, result['message'])
         redirect_url = f"https://mail.{domain}"
-        return render(request, 'password_change/success.html', {'email': email,'redirect_url':redirect_url})
+        return render(request, 'password_change/success.html', {'email': email, 'redirect_url': redirect_url})
     else:
         messages.error(request, f'Lỗi: {result["error"]}')
         return render(request, 'password_change/change_password.html')
+
+
+@rate_limit(max_attempts=5, window=300, template_name="password_change/login.html", form_class=LoginForm)
+async def login_view(request):
+    if request.method not in ("GET", "POST"):
+        return HttpResponseNotAllowed(["GET", "POST"])
+
+    form = LoginForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        email = form.cleaned_data["email"]
+        password = form.cleaned_data["password"]
+        domain = extract_domain(email)
+        hostname = f"mail.{domain}"
+
+        rs = await authenticate(domain, email, password)
+        if rs.get("success"):
+            zm_auth_token = rs["authToken"]
+            return redirect(f"https://{hostname}/login?zm_auth_token={zm_auth_token}&domain={domain}")
+
+        messages.error(request, "Email hoặc mật khẩu không hợp lệ.")
+    # else:
+    #     messages.error(request, form.errors)
+
+    return TemplateResponse(request, "password_change/login.html", {"form": form})

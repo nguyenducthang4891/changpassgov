@@ -1,11 +1,12 @@
 # your_project/settings.py
-
 import os
+
+import environ
 import ssl
 from pathlib import Path
+from django.contrib.messages import constants
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),  # thư mục static của bạn
@@ -13,14 +14,20 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 SETTINGS_DIR = Path(__file__).resolve().parent
 
-SECRET_KEY = 'your-secret-key-here-change-in-production'
 
 DEBUG = False
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+env = environ.Env()
+
+env_file = SETTINGS_DIR / (".env_prod" if not DEBUG else ".env_dev")
+print(f"Using env file: {env_file}")
+environ.Env.read_env(env_file)
+
+SECRET_KEY = env("SECRET_KEY", default="w84i+2s^4kz1=n!f5_t=0cy8tgw_=*m3c0muv16kkj5h5j3v(z")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,26 +77,38 @@ DATABASES = {
     }
 }
 
+REDIS_HOST = env("REDIS_HOST", default="localhost")
+REDIS_PORT = env("REDIS_PORT", default="6379")
+REDIS_PASSWORD = env("REDIS_PASSWORD", default="123456")
+REDIS_USER = env("REDIS_USER", default=None)
+REDIS_DBCACHE = env("REDIS_DBCACHE", default=5)
+
+
 # Cache Configuration - Redis (Production)
+
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://default:123456@10.59.91.208:6379/15' if DEBUG else 'redis://default:123456@192.168.0.161:6379/15',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://default:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DBCACHE}",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+        },
     }
 }
 
-# Cache Configuration - In-Memory (Development)
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#         'LOCATION': 'unique-snowflake',
-#     }
-# }
 
-# Logging Configuration
+
+MESSAGE_TAGS = {
+    constants.DEBUG: "secondary",
+    constants.INFO: "info",
+    constants.SUCCESS: "success",
+    constants.WARNING: "warning",
+    constants.ERROR: "danger",
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -114,7 +133,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': './logs/password_change.log' if DEBUG else '/var/log/changpassgov/password_change.log',
+            'filename': f'{BASE_DIR}/logs/password_change.log' if DEBUG else '/var/log/changpassgov/password_change.log',
             'maxBytes': 1024 * 1024 * 10,  # 10MB
             'backupCount': 5,
             'formatter': 'verbose',
@@ -152,5 +171,8 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000  # 1 năm
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
