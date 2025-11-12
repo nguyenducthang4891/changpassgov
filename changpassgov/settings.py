@@ -15,7 +15,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 SETTINGS_DIR = Path(__file__).resolve().parent
 
 
-DEBUG = False
+DEBUG = True
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
