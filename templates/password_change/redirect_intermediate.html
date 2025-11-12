@@ -147,7 +147,7 @@
     <!-- Manual link hiện sau 5 giây nếu không tự động redirect -->
     <!-- <div class="manual-link" id="manualLink">
             <p>Không tự động chuyển hướng?</p>
-            <a href="{{ zimbra_url }}" class="btn-manual" id="manualBtn">
+            <a href="" class="btn-manual" id="manualBtn">
                 Nhấn vào đây để tiếp tục
             </a>
         </div> -->
@@ -157,7 +157,7 @@
     (function () {
         // 🔒 URL được render từ server, không lộ trong JSON response
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-        const manualLink = document.getElementById('manualLink');
+
 
         console.log('[Security] Preparing redirect to Zimbra...');
 
@@ -169,10 +169,7 @@
 
         // Hiện link manual sau 5 giây nếu chưa redirect
         // (Trường hợp browser block redirect hoặc lỗi)
-        setTimeout(function () {
-            manualLink.style.display = 'block';
-            console.log('[Security] Manual link displayed');
-        }, 5000);
+
 
         // Prevent back button after redirect
         window.history.pushState(null, "", window.location.href);
