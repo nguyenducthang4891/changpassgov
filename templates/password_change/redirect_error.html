@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>Lỗi chuyển hướng</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .error-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: #ffe6e6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        h2 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+        }
+
+        .message {
+            color: #dc3545;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .detail {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .info-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin: 10px 0 0 20px;
+            padding: 0;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <div class="error-icon">⚠️</div>
+
+        <h2>Không thể chuyển hướng</h2>
+
+        <p class="message">{{ message }}</p>
+        <p class="detail">{{ detail }}</p>
+
+        <a href="{% url 'password_change:login' %}" class="btn-back">
+            Quay lại trang đăng nhập
+        </a>
+
+        <div class="info-box">
+            <strong>💡 Nguyên nhân có thể:</strong>
+            <ul>
+                <li>Link đã được sử dụng (chỉ dùng được 1 lần)</li>
+                <li>Link đã hết hạn (sau 60 giây)</li>
+                <li>Bạn đã refresh trang này</li>
+                <li>Link không hợp lệ</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

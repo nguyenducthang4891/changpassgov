@@ -8,14 +8,11 @@
     <meta name="description" content="Đăng nhập hệ thống">
 
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
     <title>Đăng nhập hệ thống</title>
-
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
@@ -88,16 +85,6 @@
             transition: transform 0.2s;
         }
 
-        .btn-change {
-            background: linear-gradient(135deg, #5fcfff 0%, #5fcfff 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 600;
-            transition: transform 0.2s;
-            color: navy;
-        }
-
         .btn-login:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
@@ -118,15 +105,16 @@
             border: none;
         }
 
-        .rate-limit-msg {
-            font-size: 0.875rem;
-            color: #dc3545;
-        }
         .form-label {
             font-weight: 600;
             color: #333;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.5rem;
             font-size: 0.9rem;
+        }
+
+        .text-danger.small {
+            margin-top: 0.25rem;
+            display: block;
         }
     </style>
 </head>
@@ -141,63 +129,64 @@
 
         <div class="login-body">
             <!-- Alert thông báo -->
-            {% if messages %}
-                <div class="messages">
+            <div id="alertContainer">
+                {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                             {{ message }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
 
-            <form method="post" novalidate>
+            <form method="post" id="loginForm" novalidate>
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
                         {{ form.email.label }}
                     </label>
                     <div class="input-group">
-            <span class="input-group-text">
-                <i class="bi bi-envelope-fill text-secondary"></i>
-            </span>
+                        <span class="input-group-text">
+                            <i class="bi bi-envelope-fill text-secondary"></i>
+                        </span>
                         {{ form.email }}
                     </div>
+                    <div id="emailError" class="text-danger small"></div>
                     {% if form.email.errors %}
-                        <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                        <div class="text-danger small">{{ form.email.errors.0 }}</div>
                     {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">
                         {{ form.password.label }}
                     </label>
                     <div class="input-group">
-            <span class="input-group-text">
-                <i class="bi bi-lock-fill text-secondary"></i>
-            </span>
+                        <span class="input-group-text">
+                            <i class="bi bi-lock-fill text-secondary"></i>
+                        </span>
                         {{ form.password }}
                     </div>
+                    <div id="passwordError" class="text-danger small"></div>
                     {% if form.password.errors %}
-                        <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
                     {% endif %}
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-login w-100" id="loginBtn">
                     <span id="btnText">Đăng nhập</span>
                     <span id="btnSpinner" class="d-none">
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Đang xử lý...
-        </span>
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Đang xử lý...
+                    </span>
                 </button>
             </form>
 
-
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <small class="text-muted">
-                    <a href="{% url 'password_change:change_password' %}" class="text-decoration-none">
+                    <a href="{% url 'app:change_password' %}" class="text-decoration-none">
                         <i class="bi bi-key-fill me-1"></i>Thay đổi mật khẩu
                     </a>
                 </small>
@@ -208,73 +197,102 @@
                     </a>
                 </small>
             </div>
-
         </div>
     </div>
 </div>
-<script>
+
+<script nonce="{{ csp_nonce }}">
 document.addEventListener("DOMContentLoaded", function() {
-    const form = document.querySelector("form");
+    const form = document.getElementById("loginForm");
     const btn = document.getElementById("loginBtn");
     const btnText = document.getElementById("btnText");
     const btnSpinner = document.getElementById("btnSpinner");
+    const alertContainer = document.getElementById("alertContainer");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
 
     form.addEventListener("submit", async function(e) {
         e.preventDefault();
+
+        // Clear previous errors
+        emailError.textContent = "";
+        passwordError.textContent = "";
+        alertContainer.innerHTML = "";
+
+        // Show loading state
+        btn.disabled = true;
         btnText.classList.add("d-none");
         btnSpinner.classList.remove("d-none");
 
         const formData = new FormData(form);
         const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-        const response = await fetch("", {
-            method: "POST",
-            body: formData,
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRFToken": csrfToken
-            }
-        });
+        try {
+            const response = await fetch("", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken
+                }
+            });
 
-        const data = await response.json();
-        btnText.classList.remove("d-none");
-        btnSpinner.classList.add("d-none");
+            const data = await response.json();
 
-        // Xóa alert cũ
-        const oldAlerts = document.querySelectorAll(".alert");
-        oldAlerts.forEach(a => a.remove());
+            if (data.success) {
+                // 🔒 Redirect đến intermediate page
+                // URL này KHÔNG chứa zm_auth_token
+                window.location.href = data.redirect_url;
+            } else {
+                // Reset button state
+                btn.disabled = false;
+                btnText.classList.remove("d-none");
+                btnSpinner.classList.add("d-none");
 
-        if (data.success) {
-            // Redirect frontend → Referer vẫn là login.bus.io.vn
-            window.location.href = data.redirect_url;
-        } else {
-            // Hiển thị lỗi
-            if (data.message) {
-                const alertDiv = document.createElement("div");
-                alertDiv.className = "alert alert-danger alert-dismissible fade show";
-                alertDiv.role = "alert";
-                alertDiv.innerHTML = `
-                    ${data.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                form.prepend(alertDiv);
-            }
+                // Show error message
+                if (data.message) {
+                    const alertDiv = document.createElement("div");
+                    alertDiv.className = "alert alert-danger alert-dismissible fade show";
+                    alertDiv.role = "alert";
+                    alertDiv.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    alertContainer.appendChild(alertDiv);
+                }
 
-            if (data.errors) {
-                // Gắn lỗi từng field
-                for (const [field, error] of Object.entries(data.errors)) {
-                    const fieldDiv = document.getElementById(`id_${field}`);
-                    if (fieldDiv) {
-                        const errDiv = document.createElement("div");
-                        errDiv.className = "text-danger small mt-1";
-                        errDiv.textContent = error;
-                        fieldDiv.closest(".mb-3").appendChild(errDiv);
+                // Show field errors
+                if (data.errors) {
+                    if (data.errors.email) {
+                        emailError.textContent = data.errors.email;
+                    }
+                    if (data.errors.password) {
+                        passwordError.textContent = data.errors.password;
                     }
                 }
             }
+        } catch (error) {
+            // Reset button state
+            btn.disabled = false;
+            btnText.classList.remove("d-none");
+            btnSpinner.classList.add("d-none");
+
+            // Show network error
+            const alertDiv = document.createElement("div");
+            alertDiv.className = "alert alert-danger alert-dismissible fade show";
+            alertDiv.role = "alert";
+            alertDiv.innerHTML = `
+                Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet và thử lại.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.appendChild(alertDiv);
+
+            console.error("Login error:", error);
         }
     });
 });
 </script>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
