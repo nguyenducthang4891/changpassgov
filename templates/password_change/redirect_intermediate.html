@@ -8,7 +8,7 @@
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
     <!-- 🔒 CRITICAL: No-referrer để Zimbra không nhận Referer header -->
-    <meta name="referrer" content="no-referrer">
+    <!-- <meta name="referrer" content="no-referrer"> -->
 
     <title>Đang chuyển hướng...</title>
 
@@ -49,8 +49,12 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         h2 {
@@ -125,57 +129,57 @@
     </style>
 </head>
 <body>
-    <div class="redirect-card">
-        <div class="spinner"></div>
+<div class="redirect-card">
+    <div class="spinner"></div>
 
-        <h2>Đang chuyển hướng</h2>
+    <h2>Đang chuyển hướng</h2>
 
-        <p>Bạn đang được chuyển đến</p>
-        <p class="domain">{{ domain }}</p>
-        <p class="hostname">{{ hostname }}</p>
+    <p>Bạn đang được chuyển đến</p>
+    <p class="domain">{{ domain }}</p>
+    <p class="hostname">{{ hostname }}</p>
 
-        <p class="wait-message">Vui lòng đợi trong giây lát...</p>
+    <p class="wait-message">Vui lòng đợi trong giây lát...</p>
 
-        <div class="security-note">
-            <i>🔒</i> Kết nối được mã hóa và bảo mật
-        </div>
+    <div class="security-note">
+        <i>🔒</i> Kết nối được mã hóa và bảo mật
+    </div>
 
-        <!-- Manual link hiện sau 5 giây nếu không tự động redirect -->
-        <!-- <div class="manual-link" id="manualLink">
+    <!-- Manual link hiện sau 5 giây nếu không tự động redirect -->
+    <!-- <div class="manual-link" id="manualLink">
             <p>Không tự động chuyển hướng?</p>
             <a href="{{ zimbra_url }}" class="btn-manual" id="manualBtn">
                 Nhấn vào đây để tiếp tục
             </a>
         </div> -->
-    </div>
+</div>
 
-    <script nonce="{{ csp_nonce }}">
-        (function() {
-            // 🔒 URL được render từ server, không lộ trong JSON response
-            const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-            const manualLink = document.getElementById('manualLink');
+<script nonce="{{ csp_nonce }}">
+    (function () {
+        // 🔒 URL được render từ server, không lộ trong JSON response
+        const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
+        const manualLink = document.getElementById('manualLink');
 
-            console.log('[Security] Preparing redirect to Zimbra...');
+        console.log('[Security] Preparing redirect to Zimbra...');
 
-            // 🔒 Auto-redirect sau 2 giây
-            setTimeout(function() {
-                console.log('[Security] Redirecting to Zimbra now...');
-                window.location.href = zimbraUrl;
-            }, 200);
+        // 🔒 Auto-redirect sau 2 giây
+        setTimeout(function () {
+            console.log('[Security] Redirecting to Zimbra now...');
+            window.location.href = zimbraUrl;
+        }, 200);
 
-            // Hiện link manual sau 5 giây nếu chưa redirect
-            // (Trường hợp browser block redirect hoặc lỗi)
-            setTimeout(function() {
-                manualLink.style.display = 'block';
-                console.log('[Security] Manual link displayed');
-            }, 5000);
+        // Hiện link manual sau 5 giây nếu chưa redirect
+        // (Trường hợp browser block redirect hoặc lỗi)
+        setTimeout(function () {
+            manualLink.style.display = 'block';
+            console.log('[Security] Manual link displayed');
+        }, 5000);
 
-            // Prevent back button after redirect
+        // Prevent back button after redirect
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function () {
             window.history.pushState(null, "", window.location.href);
-            window.onpopstate = function() {
-                window.history.pushState(null, "", window.location.href);
-            };
-        })();
-    </script>
+        };
+    })();
+</script>
 </body>
 </html>
