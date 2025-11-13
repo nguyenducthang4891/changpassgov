@@ -159,20 +159,32 @@ async def authenticate(host: str, email: str, password: str) -> dict:
         print(f"[AUTH] Response Status: {resp.status_code}")
         print(f"[AUTH] Response:\n{resp.text}\n")
 
+        # Check for SOAP Fault
         if "<soap:Fault" in resp.text:
             return {"success": False, "error": "Authentication failed"}
 
-        # Parse authToken và accountId
+        # Parse authToken và resetPassword
+        pattern_auth_token = re.compile(r"<authToken>(.*?)</authToken>", re.DOTALL)
+        pattern_reset_password = re.compile(r"<resetPassword>(.*?)</resetPassword>")
 
-        pattern_auth_token = re.compile(r"<authToken>(.*?)</authToken>")
-        authToken = pattern_auth_token.findall(resp.text)[0]
+        auth_token_match = pattern_auth_token.findall(resp.text)
+        reset_password_match = pattern_reset_password.findall(resp.text)
 
-        if authToken:
-            return {
-                "success": True,
-                "authToken": authToken
-            }
+        if not auth_token_match:
+            return {"success": False, "error": "Could not extract auth token"}
 
+        authToken = auth_token_match[0].strip()  # Loại bỏ whitespace/newline
+        is_reset_password = reset_password_match[0] if reset_password_match else "false"
+
+        logger.info(f"authToken: {authToken}")
+        logger.info(f"resetPassword: {is_reset_password}")
+
+        # Return với flag mustChangePassword
+        return {
+            "success": True,
+            "authToken": authToken,
+            "mustChangePassword": is_reset_password.lower() == "true"
+        }
         return {"success": False, "error": "Could not extract auth token"}
 
 
@@ -214,11 +226,8 @@ async def change_password_with_auth(
     print(f"[CHANGE_PW] URL: {url}")
     print(f"[CHANGE_PW] XML:\n{xml}")
 
-    ssl_context = ssl.create_default_context()
-    ssl_context.check_hostname = False
-    ssl_context.verify_mode = ssl.CERT_NONE
 
-    async with httpx.AsyncClient(verify=ssl_context, timeout=30.0) as client:
+    async with httpx.AsyncClient(verify=False, timeout=30.0) as client:
         resp = await client.post(
             url,
             content=xml.encode("utf-8"),

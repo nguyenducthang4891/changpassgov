@@ -8,10 +8,10 @@ from django.template.response import TemplateResponse
 from django.contrib import messages
 from app.decorators import rate_limit
 from app.forms import LoginForm
-from app.utils import extract_domain, call_soap_api, change_password_with_auth, authenticate
+from app.utils import extract_domain, change_password_with_auth, authenticate
 
 
-@rate_limit(max_attempts=5, window=300, template_name="password_change/change_password.html", form_class=None)
+#@rate_limit(max_attempts=5, window=300, template_name="password_change/change_password.html", form_class=None)
 async def change_password(request):
     """
     View để hiển thị form và xử lý đổi mật khẩu

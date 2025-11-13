@@ -3,8 +3,10 @@ import secrets
 
 from django.core.cache import cache
 from django.http import HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_http_methods
+from django.contrib import messages
 
 from app.decorators import rate_limit
 from app.forms import LoginForm
@@ -13,7 +15,7 @@ from app.utils import extract_domain, authenticate
 logger = logging.getLogger(__name__)
 
 
-@rate_limit(max_attempts=3, window=300, template_name="password_change/login.html", form_class=LoginForm)
+@rate_limit(max_attempts=5, window=300, template_name="password_change/login.html", form_class=LoginForm)
 async def login_view(request):
     """
     View xử lý đăng nhập
@@ -86,7 +88,14 @@ async def login_view(request):
                         "success": False,
                         "message": "Có lỗi xảy ra. Vui lòng thử lại."
                     }, status=500)
-
+                mustChangePassword = rs.get("mustChangePassword")
+                if mustChangePassword:
+                    messages.warning(request,f"Bạn đăng nhập lần đầu, vui lòng thay đổi mật khẩu")
+                    return JsonResponse({
+                        "success": True,
+                        "message": "Vui lòng thay đổi mật khẩu",
+                        "redirect_url": f"/change-password/"
+                    }, status=401)
                 # 🔒 BƯỚC 4: Tạo one-time redirect token
                 redirect_token = secrets.token_urlsafe(32)
                 cache_key = f"redirect_token:{redirect_token}"
@@ -101,9 +110,8 @@ async def login_view(request):
                     "created_at": __import__('time').time()
                 }
 
-
                 try:
-                    await cache.aset(cache_key, cache_data, timeout=60)
+                    await cache.aset(cache_key, cache_data, timeout=30)
                 except Exception as e:
                     logger.error(f"Cache error: {str(e)}")
                     return JsonResponse({
@@ -118,6 +126,7 @@ async def login_view(request):
 
                 # 🔒 BƯỚC 5: Trả về URL đến intermediate page
                 # KHÔNG trả zm_auth_token trong response này
+
                 return JsonResponse({
                     "success": True,
                     "redirect_url": f"/auth/redirect/{redirect_token}"
@@ -136,7 +145,7 @@ async def login_view(request):
                 await cache.aset(fail_key, fail_count, timeout=3600)
 
                 if fail_count >= 5:
-                    #Chỗ này có nên khóa account
+                    # Chỗ này có nên khóa account
                     logger.error(
                         f"Possible brute force attack: email={email}, "
                         f"failures={fail_count}, ip={ip_address}"
