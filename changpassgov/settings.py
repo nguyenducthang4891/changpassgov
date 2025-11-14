@@ -133,7 +133,7 @@ logger.add(
     rotation="10 MB",
     retention=retention_max_files,   # Sửa lỗi ở đây
     compression="zip",
-    level="INFO",
+    level="ERROR",
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {module} | {message}",
 )
 
