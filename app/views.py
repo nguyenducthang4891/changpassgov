@@ -292,7 +292,7 @@ async def change_password(request):
     View để hiển thị form và xử lý đổi mật khẩu
     """
     if request.method == 'GET':
-        email = request.GET.get("email")
+        email = request.GET.get("email","")
         return render(request, 'password_change/change_password.html', {'email': email})
 
     # POST request
