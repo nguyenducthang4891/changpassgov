@@ -345,7 +345,6 @@ async def change_password(request):
 
     if result['success']:
         messages.success(request, result['message'])
-        redirect_url = f"https://mail.{domain}"
         return render(request, 'password_change/success.html', {'email': email})
     else:
         messages.error(request, f'Lỗi: {result["error"]}')
