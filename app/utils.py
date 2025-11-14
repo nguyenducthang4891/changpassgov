@@ -194,9 +194,6 @@ async def change_password_with_auth(
         old_password: str,
         new_password: str
 ) -> dict:
-    """
-    Đổi mật khẩu sau khi authenticate (RECOMMENDED)
-    """
     # Step 1: Authenticate
     auth_result = await authenticate(host, email, old_password)
     if not auth_result["success"]:
@@ -209,23 +206,19 @@ async def change_password_with_auth(
 
     xml = f"""<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
-  <soap:Header>
-    <context xmlns="urn:zimbra">
-      <authToken>{authToken}</authToken>
-    </context>
-  </soap:Header>
+  
   <soap:Body>
     <ChangePasswordRequest xmlns="urn:zimbraAccount">
       <account by="name">{email}</account>
       <oldPassword>{old_password}</oldPassword>
       <password>{new_password}</password>
+       <authToken>{authToken}</authToken>
     </ChangePasswordRequest>
   </soap:Body>
 </soap:Envelope>"""
 
     print(f"[CHANGE_PW] URL: {url}")
     print(f"[CHANGE_PW] XML:\n{xml}")
-
 
     async with httpx.AsyncClient(verify=False, timeout=30.0) as client:
         resp = await client.post(
@@ -242,4 +235,4 @@ async def change_password_with_auth(
             error = fault_match.group(1) if fault_match else "Unknown error"
             return {"success": False, "error": error, "body": resp.text}
 
-        return {"success": True, "message": "Password changed successfully", "body": resp.text}
+        return {"success": True, "message": "Đã thay đổi mật khẩu thành công", "body": resp.text}

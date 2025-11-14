@@ -15,7 +15,7 @@ from app.utils import extract_domain, authenticate
 logger = logging.getLogger(__name__)
 
 
-@rate_limit(max_attempts=5, window=300, template_name="password_change/login.html", form_class=LoginForm)
+@rate_limit(max_attempts=5, window=180, template_name="password_change/login.html", form_class=LoginForm)
 async def login_view(request):
     """
     View xử lý đăng nhập
@@ -81,14 +81,14 @@ async def login_view(request):
 
             if rs and rs.get("success"):
                 zm_auth_token = rs.get("authToken")
-
                 if not zm_auth_token:
                     logger.error(f"No authToken in response for {email}")
                     return JsonResponse({
                         "success": False,
                         "message": "Có lỗi xảy ra. Vui lòng thử lại."
                     }, status=500)
-                mustChangePassword = rs.get("mustChangePassword")
+                mustChangePassword = rs.get("mustChangePassword",False)
+
                 if mustChangePassword:
                     messages.warning(request,f"Bạn đăng nhập lần đầu, vui lòng thay đổi mật khẩu")
                     return JsonResponse({
@@ -111,7 +111,7 @@ async def login_view(request):
                 }
 
                 try:
-                    await cache.aset(cache_key, cache_data, timeout=30)
+                    await cache.aset(cache_key, cache_data, timeout=60)
                 except Exception as e:
                     logger.error(f"Cache error: {str(e)}")
                     return JsonResponse({
@@ -283,3 +283,6 @@ async def redirect_intermediate_view(request, token):
     )
 
     return response
+
+
+
