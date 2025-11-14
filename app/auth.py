@@ -207,7 +207,7 @@ async def change_password_with_auth_aiohttp(host: str,email: str,old_password: s
         }
     """
     # Step 1: Authenticate
-    auth_result = await authenticate_aiohttp(host, email, old_password, debug=debug)
+    auth_result = await authenticate_aiohttp(host, email, old_password)
     if not auth_result["success"]:
         return {
             "success": False,
@@ -220,7 +220,7 @@ async def change_password_with_auth_aiohttp(host: str,email: str,old_password: s
     url = f"https://mail.{host}/service/soap"
     xml_body = build_change_password_xml(email, old_password, new_password, auth_token,mustChangePassword)
 
-    logger.infot(f"[CHANGE_PW] URL: {url}")
+    logger.info(f"[CHANGE_PW] URL: {url}")
     logger.info(f"[CHANGE_PW] XML:\n{xml_body}")
 
     try:
