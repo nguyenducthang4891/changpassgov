@@ -5,11 +5,10 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'changpassgov.settings')
 django.setup()
 
-from app.utils import must_change_password,change_password_with_auth
-
+from app.auth import change_password_with_auth_aiohttp
 
 async def main():
-    x = await must_change_password(
+    x = await change_password_with_auth_aiohttp(
         "interface.io.vn",
         "user05@interface.io.vn",
         "P@ssvv0rd567",

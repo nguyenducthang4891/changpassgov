@@ -1,10 +1,12 @@
 # your_project/settings.py
 import os
+import sys
 
 import environ
 import ssl
 from pathlib import Path
 from django.contrib.messages import constants
+from loguru import logger
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -109,54 +111,31 @@ MESSAGE_TAGS = {
     constants.ERROR: "danger",
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {asctime} {message}',
-            'style': '{',
-        },
-        'colored': {
-            'format': '%(levelname)s %(asctime)s [%(name)s] %(message)s',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-            'level': 'INFO',
-        },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': f'{BASE_DIR}/logs/password_change.log' if DEBUG else '/var/log/changpassgov/password_change.log',
-            'maxBytes': 1024 * 1024 * 10,  # 10MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-            'level': 'INFO',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'password_change': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-}
+#Config logging
+LOG_PATH = f"{BASE_DIR}/logs/password_change.log" if DEBUG else "/var/log/changpassgov/password_change.log"
+os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+
+def retention_max_files(files):
+    files.sort(key=os.path.getmtime, reverse=True)
+    for f in files[5:]:
+        os.remove(f)
+
+logger.remove()
+
+logger.add(
+    sys.stdout,
+    level="INFO",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+)
+
+logger.add(
+    LOG_PATH,
+    rotation="10 MB",
+    retention=retention_max_files,   # Sửa lỗi ở đây
+    compression="zip",
+    level="INFO",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {module} | {message}",
+)
 
 # Static files
 STATIC_URL = '/static/'
