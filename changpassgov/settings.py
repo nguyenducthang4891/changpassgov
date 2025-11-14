@@ -112,31 +112,48 @@ MESSAGE_TAGS = {
 }
 
 #Config logging
-LOG_PATH = f"{BASE_DIR}/logs/password_change.log" if DEBUG else "/var/log/changpassgov/password_change.log"
-os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+DEBUG_LOG_PATH = f"{BASE_DIR}/logs/debug.log" if DEBUG else "/var/log/changpassgov/debug.log"
+ERROR_LOG_PATH = f"{BASE_DIR}/logs/error.log" if DEBUG else "/var/log/changpassgov/error.log"
 
-def retention_max_files(files):
-    files.sort(key=os.path.getmtime, reverse=True)
-    for f in files[5:]:
-        os.remove(f)
+# Tạo thư mục logs
+os.makedirs(os.path.dirname(ERROR_LOG_PATH), exist_ok=True)
 
+# Xóa logger mặc định
 logger.remove()
 
+# 1. Console
+console_level = "DEBUG" if DEBUG else "INFO"
 logger.add(
     sys.stdout,
-    level="DEBUG",
-    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+    level=console_level,
+    format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{message}</cyan>",
+    colorize=True,
 )
 
+# 2. File DEBUG - Chỉ trong development
+if DEBUG:
+    logger.add(
+        DEBUG_LOG_PATH,
+        rotation="50 MB",
+        retention=2,  # Loguru tự động giữ 2 file mới nhất
+        compression="zip",
+        level="DEBUG",
+        format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {module}:{function}:{line} | {message}",
+        enqueue=True,
+    )
+
+# 3. File ERROR - Luôn bật
 logger.add(
-    LOG_PATH,
+    ERROR_LOG_PATH,
     rotation="10 MB",
-    retention=retention_max_files,   # Sửa lỗi ở đây
+    retention=10,  # Loguru tự động giữ 10 file mới nhất
     compression="zip",
     level="ERROR",
-    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {module} | {message}",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {module}:{function}:{line} | {message}",
+    enqueue=True,
 )
 
+logger.info(f"Logging initialized - DEBUG mode: {DEBUG}")
 # Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
