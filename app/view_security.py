@@ -94,7 +94,7 @@ async def login_view(request):
                     return JsonResponse({
                         "success": True,
                         "message": "Vui lòng thay đổi mật khẩu",
-                        "redirect_url": f"/change-password/"
+                        "redirect_url": f"/change-password/?email={email}"
                     }, status=401)
                 # 🔒 BƯỚC 4: Tạo one-time redirect token
                 redirect_token = secrets.token_urlsafe(32)
