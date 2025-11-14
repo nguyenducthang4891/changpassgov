@@ -16,7 +16,7 @@ from app.auth import change_password_with_auth_aiohttp, authenticate_aiohttp
 from loguru import logger
 
 
-@rate_limit(max_attempts=5, window=180, template_name="password_change/login.html", form_class=LoginForm)
+#@rate_limit(max_attempts=5, window=180, template_name="password_change/login.html", form_class=LoginForm)
 async def login_view(request):
     """
     View xử lý đăng nhập

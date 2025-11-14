@@ -124,7 +124,7 @@ logger.remove()
 
 logger.add(
     sys.stdout,
-    level="INFO",
+    level="DEBUG",
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
 )
 
