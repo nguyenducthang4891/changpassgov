@@ -7,7 +7,7 @@ import hashlib
 from app.utils import get_client_ip
 
 
-def rate_limit(max_attempts=5, window=300, template_name=None, form_class=None):
+def rate_limit(max_attempts=20, window=180, template_name=None, form_class=None):
     """
     Decorator giới hạn số lần thử POST (theo email & IP)
     - template_name: template fallback khi bị giới hạn
