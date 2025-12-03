@@ -55,8 +55,9 @@ async def login_view(request):
             #     }, status=401)
 
             hostname = f"mail.{domain}"
-
-            # 🔒 BƯỚC 2: Validate hostname format (prevent injection)
+            if domain == 'mailpoc.cpt.gov.vn':
+                hostname ='mailpoc.cpt.gov.vn'
+            # 🔒 BƯỚC 2: Validhostnameate hostname format (prevent injection)
             if not hostname.replace('.', '').replace('-', '').isalnum():
                 logger.error(
                     f"Invalid hostname format: hostname={hostname}, "
@@ -247,6 +248,7 @@ async def redirect_intermediate_view(request, token):
     zm_auth_token = data.get('zm_auth_token')
     hostname = data.get('hostname')
     domain = data.get('domain')
+
 
     zimbra_url = (
         f"https://{hostname}/login"

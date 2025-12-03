@@ -100,7 +100,10 @@ async def authenticate_aiohttp(host: str, email: str, password: str) -> dict:
             "error": str (nếu success=False)
         }
     """
+
     url = f"https://mail.{host}/service/soap"
+    if host == "mailpoc.cpt.gov.vn":
+        url = f"https://{host}/service/soap"
     xml_body = build_auth_xml(email, password)
 
 
@@ -218,6 +221,8 @@ async def change_password_with_auth_aiohttp(host: str,email: str,old_password: s
     mustChangePassword = auth_result["mustChangePassword"]
     # Step 2: Change password với authToken
     url = f"https://mail.{host}/service/soap"
+    if host == "mailpoc.cpt.gov.vn":
+        url = f"https://{host}/service/soap"
     xml_body = build_change_password_xml(email, old_password, new_password, auth_token,mustChangePassword)
 
     logger.info(f"[CHANGE_PW] URL: {url}")
