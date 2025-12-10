@@ -150,73 +150,50 @@
     </p>
 </div>
 
+<!-- redirect_intermediate.html - Alternative POST method -->
 <script nonce="{{ csp_nonce }}">
     (function () {
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
+        const authToken = "{{ zm_auth_token|escapejs }}";
+        const domain = "{{ domain|escapejs }}";
         const isMobile = {{ is_mobile|lower }};
-        const redirectCard = document.getElementById('redirectCard');
-        const continueBtn = document.getElementById('continueBtn');
-        const title = document.getElementById('title');
-
-        console.log('[SSO] Mobile:', isMobile);
-        console.log('[SSO] Target:', zimbraUrl);
 
         function performRedirect() {
-            console.log('[SSO] Redirecting...');
+            // ⚠️ Create form and POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://{{ hostname }}/login';
 
-            // ⚠️ FIX: Use window.location.replace for mobile
-            // This prevents back button issues
-            if (isMobile) {
-                window.location.replace(zimbraUrl);
-            } else {
-                window.location.href = zimbraUrl;
-            }
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = 'zm_auth_token';
+            tokenInput.value = authToken;
+
+            const domainInput = document.createElement('input');
+            domainInput.type = 'hidden';
+            domainInput.name = 'domain';
+            domainInput.value = domain;
+
+            form.appendChild(tokenInput);
+            form.appendChild(domainInput);
+            document.body.appendChild(form);
+
+            console.log('[SSO] Submitting form');
+            form.submit();
         }
 
-        function showManualMode() {
-            console.log('[SSO] Showing manual mode');
-            redirectCard.classList.add('manual-mode');
-            title.textContent = 'Nhấn nút để tiếp tục';
-        }
-
-        // ⚠️ FIX: Mobile ALWAYS requires user interaction
         if (isMobile) {
-            console.log('[SSO] Mobile detected - requiring user click');
             setTimeout(showManualMode, 500);
         } else {
-            // Desktop: Try auto-redirect với delay dài hơn
-            console.log('[SSO] Desktop - auto redirecting');
-
-            const autoTimer = setTimeout(performRedirect, 2000);
-
-            // Fallback after 5 seconds
-            setTimeout(function() {
-                if (window.location.href.indexOf('/auth/redirect/') !== -1) {
-                    console.log('[SSO] Auto-redirect failed, showing button');
-                    clearTimeout(autoTimer);
-                    showManualMode();
-                }
-            }, 5000);
+            setTimeout(performRedirect, 2000);
         }
 
-        // Button click handler
         continueBtn.addEventListener('click', function(e) {
             e.preventDefault();
-
-            console.log('[SSO] User clicked continue');
-
             continueBtn.disabled = true;
             continueBtn.textContent = 'Đang chuyển hướng...';
-
-            // ⚠️ FIX: Longer delay for mobile to ensure cookie is set
-            setTimeout(performRedirect, isMobile ? 500 : 300);
+            setTimeout(performRedirect, 300);
         });
-
-        // Prevent back button
-        history.pushState(null, "", location.href);
-        window.onpopstate = function () {
-            history.pushState(null, "", location.href);
-        };
     })();
 </script>
 </body>
