@@ -71,56 +71,25 @@
             color: #1565C0;
         }
 
-        .btn-continue {
-            display: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-continue:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-continue:active {
-            transform: translateY(0);
-        }
-
-        .manual-text {
-            display: none;
+        .debug {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 0.75rem;
             color: #666;
-            font-size: 0.9rem;
-            margin-top: 15px;
-        }
-
-        .show-manual .spinner {
-            display: none;
-        }
-
-        .show-manual h2 {
-            color: #667eea;
-        }
-
-        .show-manual .btn-continue,
-        .show-manual .manual-text {
-            display: block;
+            text-align: left;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
-<div class="redirect-card" id="redirectCard">
-    <div class="spinner" id="spinner"></div>
+<div class="redirect-card">
+    <div class="spinner"></div>
 
-    <h2 id="title">Đang chuyển hướng</h2>
+    <h2>Đang chuyển hướng</h2>
 
     <p>Bạn đang được chuyển đến</p>
     <p class="domain">{{ domain }}</p>
@@ -130,80 +99,29 @@
         <i>🔒</i> Kết nối được mã hóa và bảo mật
     </div>
 
-    <button class="btn-continue" id="continueBtn">
-        Tiếp tục đến hộp thư →
-    </button>
-
-    <p class="manual-text">
-        Nhấn nút trên để hoàn tất đăng nhập
-    </p>
+    <div class="debug" id="debug"></div>
 </div>
 
 <script nonce="{{ csp_nonce }}">
     (function () {
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-        const redirectCard = document.getElementById('redirectCard');
-        const continueBtn = document.getElementById('continueBtn');
-        const title = document.getElementById('title');
-        let autoRedirected = false;
+        const debugEl = document.getElementById('debug');
 
-        console.log('[SSO] Starting redirect process...');
-        console.log('[SSO] Target URL:', zimbraUrl);
-        console.log('[SSO] User Agent:', navigator.userAgent);
+        function log(msg) {
+            console.log(msg);
+            debugEl.innerHTML += msg + '<br>';
+        }
 
-        // Detect mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        console.log('[SSO] Is mobile:', isMobile);
+        log('[1] Starting redirect...');
+        log('[2] Target URL: ' + zimbraUrl.substring(0, 80) + '...');
+        log('[3] Current location: ' + window.location.href);
+        log('[4] User agent: ' + navigator.userAgent);
 
-        // Hàm redirect
-        function redirectToZimbra() {
-            console.log('[SSO] Redirecting to Zimbra...');
+        // Simple redirect after 2 seconds
+        setTimeout(function () {
+            log('[5] Redirecting now...');
             window.location.href = zimbraUrl;
-        }
-
-        // Trên mobile: BẮT BUỘC user click
-        if (isMobile) {
-            console.log('[SSO] Mobile detected - requiring user interaction');
-
-            // Hiện nút ngay lập tức cho mobile
-            setTimeout(function() {
-                redirectCard.classList.add('show-manual');
-                title.textContent = 'Vui lòng nhấn nút bên dưới';
-            }, 500);
-
-        } else {
-            // Desktop: auto-redirect sau 1 giây
-            console.log('[SSO] Desktop detected - auto-redirecting');
-
-            setTimeout(function() {
-                if (!autoRedirected) {
-                    autoRedirected = true;
-                    redirectToZimbra();
-                }
-            }, 1000);
-
-            // Backup: hiện nút manual sau 3 giây nếu chưa redirect
-            setTimeout(function() {
-                if (document.visibilityState === 'visible') {
-                    console.log('[SSO] Auto-redirect failed, showing manual button');
-                    redirectCard.classList.add('show-manual');
-                    title.textContent = 'Vui lòng nhấn nút bên dưới';
-                }
-            }, 3000);
-        }
-
-        // Click handler
-        continueBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('[SSO] User clicked continue button');
-
-            // Disable button
-            continueBtn.disabled = true;
-            continueBtn.textContent = 'Đang chuyển...';
-
-            // Redirect with user interaction
-            redirectToZimbra();
-        });
+        }, 2000);
 
         // Prevent back button
         window.history.pushState(null, "", window.location.href);
