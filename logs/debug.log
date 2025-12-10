@@ -232,3 +232,145 @@
 2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
 2025-12-10 14:20:09 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
 2025-12-10 14:20:09 | INFO     | views:redirect_intermediate_view:264 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1, url=https://mail.nghean.gov.vn/login?zm_auth_token=0_17687f50fe223b429741b9217c6a0086c0d589a3_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353338303030393232303b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313931363439323132373b76657273696f6e3d31353a31302e312e31315f47415f303432353b&domain=nghean.gov.vn
+2025-12-10 14:31:05 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:31:06 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_cd6e00521ac463ddcc3bf53abf4d483f7400b3ae_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303730333536323b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313330323737383534343b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_cd6e00521ac463ddcc3bf53abf4d483f7400b3ae_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303730333536323b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313330323737383534343b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:31:43 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:31:43 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:31:43 | ERROR    | views:redirect_intermediate_view:278 | Preauth computation failed: 'Settings' object has no attribute 'zimbraPreAuthKey'
+2025-12-10 14:32:45 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:32:45 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:32:46 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:32:46 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_8bbf06e1a304201b01a45a480248a7d4b3f3030e_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303736353838353b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3131353130353031333b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:32:46 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_8bbf06e1a304201b01a45a480248a7d4b3f3030e_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303736353838353b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3131353130353031333b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:32:46 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:32:46 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:32:46 | ERROR    | views:redirect_intermediate_view:278 | Preauth computation failed: 'Settings' object has no attribute 'zimbraPreAuthKey'
+2025-12-10 14:34:44 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_f6f135febe4fb300d2f6768b7ad64bc556a76f31_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303839333030323b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313538363436373835393b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_f6f135febe4fb300d2f6768b7ad64bc556a76f31_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303839333030323b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313538363436373835393b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:34:53 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:34:53 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:34:53 | INFO     | views:redirect_intermediate_view:272 | Preauth token generated: email=admin@mailpoc.cpt.gov.vn, timestamp=1765352093234, token_prefix=2f8ef9fdac...
+2025-12-10 14:34:53 | INFO     | views:redirect_intermediate_view:298 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/service/preauth?account=admin%40mailpoc.cpt.gov.vn&by=name&timestamp=1765352093234&expires=0&preauth=2f8ef9fdacd727f7514ed050b6e69ad929c7f75e
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_719e23601147a9d09d72c4973ef8295dbec9ba0a_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303931383532343b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3834333630303233323b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_719e23601147a9d09d72c4973ef8295dbec9ba0a_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338303931383532343b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3834333630303233323b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:35:18 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:35:18 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:35:19 | INFO     | views:redirect_intermediate_view:272 | Preauth token generated: email=admin@mailpoc.cpt.gov.vn, timestamp=1765352119104, token_prefix=8c52a18e9d...
+2025-12-10 14:35:19 | INFO     | views:redirect_intermediate_view:298 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/service/preauth?account=admin%40mailpoc.cpt.gov.vn&by=name&timestamp=1765352119104&expires=0&preauth=8c52a18e9d4b551368c07fafe27071475daa5a85
+2025-12-10 14:36:09 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_fa54464941984849b0710d0019682ceea87f9d7a_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338313031383133303b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313934333633363732323b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_fa54464941984849b0710d0019682ceea87f9d7a_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338313031383133303b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d31303a313934333633363732323b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:36:58 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:36:58 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:36:58 | INFO     | views:redirect_intermediate_view:265 | Dùng preauth
+2025-12-10 14:36:58 | INFO     | views:redirect_intermediate_view:273 | Preauth token generated: email=admin@mailpoc.cpt.gov.vn, timestamp=1765352218685, token_prefix=30263cdf05...
+2025-12-10 14:36:58 | INFO     | views:redirect_intermediate_view:299 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/service/preauth?account=admin%40mailpoc.cpt.gov.vn&by=name&timestamp=1765352218685&expires=0&preauth=30263cdf052da007551d2ef75aff6f6f129613fd
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="655"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_96da5027b2056a99ed52d8b348dd34a258303581_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338313036363634363b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3934383633363635303b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_96da5027b2056a99ed52d8b348dd34a258303581_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353338313036363634363b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3934383633363635303b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:37:46 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:37:46 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:37:46 | INFO     | views:redirect_intermediate_view:265 | Dùng preauth
+2025-12-10 14:37:46 | INFO     | views:redirect_intermediate_view:273 | Preauth token generated: email=admin@mailpoc.cpt.gov.vn, timestamp=1765352266866, token_prefix=27b74ea268...
+2025-12-10 14:37:46 | INFO     | views:redirect_intermediate_view:299 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/service/preauth?account=admin%40mailpoc.cpt.gov.vn&by=name&timestamp=1765352266866&expires=0&preauth=27b74ea26815ffe9c470cb2c0466bcc4e4a769b7

@@ -1,0 +1,2 @@
+2025-12-10 14:31:43 | ERROR    | views:redirect_intermediate_view:278 | Preauth computation failed: 'Settings' object has no attribute 'zimbraPreAuthKey'
+2025-12-10 14:32:46 | ERROR    | views:redirect_intermediate_view:278 | Preauth computation failed: 'Settings' object has no attribute 'zimbraPreAuthKey'

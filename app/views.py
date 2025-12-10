@@ -1,6 +1,7 @@
 import re
 import urllib
 
+from django.conf import settings
 from django.shortcuts import render
 import secrets
 
@@ -16,6 +17,8 @@ from app.forms import LoginForm
 from app.utils import extract_domain
 from app.auth import change_password_with_auth_aiohttp, authenticate_aiohttp
 from loguru import logger
+
+from app.zimbra_preauth import compute_preauth_token
 
 
 @rate_limit(max_attempts=20, window=180, template_name="password_change/login.html", form_class=LoginForm)
@@ -250,13 +253,46 @@ async def redirect_intermediate_view(request, token):
     zm_auth_token = data.get('zm_auth_token')
     hostname = data.get('hostname')
     domain = data.get('domain')
-
+    email = data.get('email')
 
     zimbra_url = (
         f"https://{hostname}/login"
         f"?zm_auth_token={zm_auth_token}"
         f"&domain={domain}"
     )
+
+    if "mailpoc.cpt.gov.vn" in hostname:
+        logger.info("Dùng preauth")
+        try:
+            preauth_token, timestamp = compute_preauth_token(
+                account=email,
+                preauth_key=settings.ZIMBRA_PREAUTH_KEY,
+                expires=0
+            )
+
+            logger.info(
+                f"Preauth token generated: email={email}, "
+                f"timestamp={timestamp}, token_prefix={preauth_token[:10]}..."
+            )
+
+        except Exception as e:
+            logger.error(f"Preauth computation failed: {str(e)}")
+            return TemplateResponse(
+                request,
+                "password_change/redirect_error.html",
+                {"message": "Không thể tạo token xác thực."},
+                status=500
+            )
+
+            # ✅ Tạo preauth URL với format ĐÚNG
+        zimbra_url = (
+            f"https://{hostname}/service/preauth"
+            f"?account={urllib.parse.quote(email)}"
+            f"&by=name"
+            f"&timestamp={timestamp}"
+            f"&expires=0"
+            f"&preauth={preauth_token}"
+        )
 
 
 
