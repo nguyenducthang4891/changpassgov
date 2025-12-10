@@ -184,5 +184,8 @@ if not DEBUG:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LANGUAGE_CODE = "vi"
+TIME_ZONE = "Asia/Ho_Chi_Minh"
+USE_TZ = True
 
 ZIMBRA_PREAUTH_KEY = "be8fd6a8d0076d4915f4adf9242d6282025aa2de6c9d6b735eb3d926b4c579f0"
