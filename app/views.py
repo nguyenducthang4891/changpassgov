@@ -293,6 +293,7 @@ async def redirect_intermediate_view(request, token):
             f"&expires=0"
             f"&preauth={preauth_token}"
         )
+        logger.info(f"redirect url: {zimbra_url}")
 
 
 
