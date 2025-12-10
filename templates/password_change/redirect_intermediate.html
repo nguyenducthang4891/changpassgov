@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
-
-    <!-- 🔒 CRITICAL: No-referrer để Zimbra không nhận Referer header -->
-    <!-- <meta name="referrer" content="no-referrer"> -->
     <meta name="referrer" content="origin">
     <title>Đang chuyển hướng...</title>
 
@@ -50,12 +45,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         h2 {
@@ -68,51 +59,7 @@
             font-weight: bold;
             color: #667eea;
             font-size: 1.1rem;
-        }
-
-        .hostname {
-            color: #666;
-            font-size: 0.95rem;
-            margin-top: 10px;
-        }
-
-        .wait-message {
-            font-size: 0.9rem;
-            color: #999;
-            margin-top: 20px;
-        }
-
-        .manual-link {
-            display: none;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 2px dashed #e0e0e0;
-        }
-
-        .manual-link p {
-            color: #e74c3c;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .btn-manual {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 10px;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .btn-manual:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-            color: white;
+            margin: 10px 0;
         }
 
         .security-note {
@@ -124,55 +71,102 @@
             color: #1565C0;
         }
 
-        .security-note i {
-            margin-right: 5px;
+        /* Button cho manual redirect */
+        .manual-redirect {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .btn-continue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-continue:active {
+            transform: translateY(0);
+        }
+
+        .note {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 <div class="redirect-card">
-    <div class="spinner"></div>
+    <div class="spinner" id="spinner"></div>
 
-    <h2>Đang chuyển hướng</h2>
+    <h2 id="title">Đang chuyển hướng</h2>
 
     <p>Bạn đang được chuyển đến</p>
     <p class="domain">{{ domain }}</p>
     <p class="hostname">{{ hostname }}</p>
 
-    <p class="wait-message">Vui lòng đợi trong giây lát...</p>
-
     <div class="security-note">
         <i>🔒</i> Kết nối được mã hóa và bảo mật
     </div>
 
-    <!-- Manual link hiện sau 5 giây nếu không tự động redirect -->
-    <!-- <div class="manual-link" id="manualLink">
-            <p>Không tự động chuyển hướng?</p>
-            <a href="" class="btn-manual" id="manualBtn">
-                Nhấn vào đây để tiếp tục
-            </a>
-        </div> -->
+    <!-- Manual redirect button - hiện sau 3 giây -->
+    <div class="manual-redirect" id="manualRedirect">
+        <button class="btn-continue" id="continueBtn">
+            Tiếp tục đến hộp thư
+        </button>
+        <p class="note">Nhấn nút trên để hoàn tất đăng nhập</p>
+    </div>
 </div>
 
 <script nonce="{{ csp_nonce }}">
     (function () {
-        // 🔒 URL được render từ server, không lộ trong JSON response
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-
+        let redirectAttempted = false;
 
         console.log('[Security] Preparing redirect to Zimbra...');
 
-        // 🔒 Auto-redirect sau 2 giây
-        setTimeout(function () {
-            console.log('[Security] Redirecting to Zimbra now...');
+        // Thử auto-redirect trước
+        const autoRedirectTimer = setTimeout(function () {
+            console.log('[Security] Attempting auto-redirect...');
+            redirectAttempted = true;
             window.location.href = zimbraUrl;
-        }, 5000);
+        }, 1500);
 
-        // Hiện link manual sau 5 giây nếu chưa redirect
-        // (Trường hợp browser block redirect hoặc lỗi)
+        // Sau 3 giây, hiện nút manual nếu vẫn còn trên trang
+        setTimeout(function() {
+            if (!redirectAttempted || document.visibilityState === 'visible') {
+                console.log('[Security] Auto-redirect may have failed, showing manual button...');
 
+                // Ẩn spinner, đổi title
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('title').textContent = 'Vui lòng tiếp tục';
 
-        // Prevent back button after redirect
+                // Hiện nút manual
+                document.getElementById('manualRedirect').style.display = 'block';
+
+                // Clear auto redirect timer
+                clearTimeout(autoRedirectTimer);
+            }
+        }, 3000);
+
+        // Manual redirect với user interaction
+        document.getElementById('continueBtn').addEventListener('click', function() {
+            console.log('[Security] Manual redirect triggered by user click...');
+            window.location.href = zimbraUrl;
+        });
+
+        // Prevent back button
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function () {
             window.history.pushState(null, "", window.location.href);
