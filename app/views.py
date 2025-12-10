@@ -191,13 +191,12 @@ async def login_view(request):
     return response
 
 
+# app/views.py
+
 @require_http_methods(["GET"])
 async def redirect_intermediate_view(request, token):
     """
-    🔒 Intermediate page: Lấy token từ cache và redirect đến Zimbra
-    - Token chỉ dùng được 1 lần
-    - Expire sau 60 giây
-    - Validate IP nếu cần
+    Intermediate page: Lấy token từ cache và redirect đến Zimbra
     """
     cache_key = f"redirect_token:{token}"
 
@@ -208,63 +207,37 @@ async def redirect_intermediate_view(request, token):
         data = None
 
     if not data:
-        logger.warning(
-            f"Invalid/expired redirect token: token={token}, "
-            f"ip={request.META.get('REMOTE_ADDR', 'unknown')}"
-        )
+        logger.warning(f"Invalid/expired redirect token: token={token}")
         return TemplateResponse(
             request,
             "password_change/redirect_error.html",
-            {
-                "message": "Link đã hết hạn hoặc không hợp lệ.",
-                "detail": "Vui lòng đăng nhập lại."
-            },
+            {"message": "Link đã hết hạn hoặc không hợp lệ."},
             status=400
         )
 
-    # 🔒 Xóa token ngay (one-time use)
+    # Xóa token (one-time use)
     try:
         await cache.adelete(cache_key)
     except Exception as e:
         logger.error(f"Cache delete error: {str(e)}")
 
-    # 🔒 Optional: Kiểm tra IP khớp với lúc login
-    current_ip = request.META.get('HTTP_X_FORWARDED_FOR')
-    if current_ip:
-        current_ip = current_ip.split(',')[0].strip()
-    else:
-        current_ip = request.META.get('REMOTE_ADDR', 'unknown')
-
-    if data.get('ip') != current_ip:
-        logger.warning(
-            f"IP mismatch for redirect token: "
-            f"login_ip={data.get('ip')}, redirect_ip={current_ip}, "
-            f"email={data.get('email')}"
-        )
-        # Tuỳ chọn: có thể chặn hoặc cho phép
-        # Ở đây tôi cho phép nhưng ghi log
-
-    # 🔒 Construct final Zimbra URL
     zm_auth_token = data.get('zm_auth_token')
     hostname = data.get('hostname')
     domain = data.get('domain')
 
+    # ⚠️ FIX: Construct URL với encoded token
+    from urllib.parse import quote
 
     zimbra_url = (
         f"https://{hostname}/login"
-        f"?zm_auth_token={zm_auth_token}"
-        f"&domain={domain}"
+        f"?zm_auth_token={quote(zm_auth_token)}"
+        f"&domain={quote(domain)}"
     )
 
-    logger.info(
-        f"Redirecting to Zimbra: email={data.get('email')}, "
-        f"hostname={hostname}, ip={current_ip}"
-    )
+    logger.info(f"Redirecting to Zimbra: email={data.get('email')}, hostname={hostname}")
 
-    # Generate CSP nonce for this page
     csp_nonce = secrets.token_urlsafe(16)
 
-    # 🔒 Render intermediate page với auto-redirect
     response = TemplateResponse(
         request,
         "password_change/redirect_intermediate.html",
@@ -272,20 +245,34 @@ async def redirect_intermediate_view(request, token):
             "zimbra_url": zimbra_url,
             "domain": domain,
             "hostname": hostname,
-            "csp_nonce": csp_nonce
+            "csp_nonce": csp_nonce,
+            # ⚠️ ADD: Pass user agent info
+            "is_mobile": is_mobile_browser(request),
         }
     )
 
-    # Set CSP header
+    # ⚠️ FIX: Relaxed CSP for mobile
     response['Content-Security-Policy'] = (
         f"default-src 'self'; "
         f"style-src 'self' 'unsafe-inline'; "
         f"script-src 'self' 'nonce-{csp_nonce}'; "
         f"img-src 'self' data:; "
-        f"connect-src 'self';"
+        f"connect-src 'self' https://{hostname};"  # Allow connect to Zimbra
     )
 
+    # ⚠️ FIX: Add headers to prevent caching
+    response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+
     return response
+
+
+def is_mobile_browser(request):
+    """Detect mobile browser"""
+    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
+    mobile_keywords = ['android', 'iphone', 'ipad', 'mobile', 'webos']
+    return any(keyword in user_agent for keyword in mobile_keywords)
 
 
 @rate_limit(max_attempts=20, window=180, template_name="password_change/change_password.html", form_class=None)
