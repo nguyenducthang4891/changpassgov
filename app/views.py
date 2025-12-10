@@ -261,39 +261,39 @@ async def redirect_intermediate_view(request, token):
         f"&domain={domain}"
     )
 
-    if "mailpoc.cpt.gov.vn" in hostname:
-        logger.info("Dùng preauth")
-        try:
-            preauth_token, timestamp = compute_preauth_token(
-                account=email,
-                preauth_key=settings.ZIMBRA_PREAUTH_KEY,
-                expires=0
-            )
-
-            logger.info(
-                f"Preauth token generated: email={email}, "
-                f"timestamp={timestamp}, token_prefix={preauth_token[:10]}..."
-            )
-
-        except Exception as e:
-            logger.error(f"Preauth computation failed: {str(e)}")
-            return TemplateResponse(
-                request,
-                "password_change/redirect_error.html",
-                {"message": "Không thể tạo token xác thực."},
-                status=500
-            )
-
-            # ✅ Tạo preauth URL với format ĐÚNG
-        zimbra_url = (
-            f"https://{hostname}/service/preauth"
-            f"?account={urllib.parse.quote(email)}"
-            f"&by=name"
-            f"&timestamp={timestamp}"
-            f"&expires=0"
-            f"&preauth={preauth_token}"
-        )
-        logger.info(f"redirect url: {zimbra_url}")
+    # if "mailpoc.cpt.gov.vn" in hostname:
+    #     logger.info("Dùng preauth")
+    #     try:
+    #         preauth_token, timestamp = compute_preauth_token(
+    #             account=email,
+    #             preauth_key=settings.ZIMBRA_PREAUTH_KEY,
+    #             expires=0
+    #         )
+    #
+    #         logger.info(
+    #             f"Preauth token generated: email={email}, "
+    #             f"timestamp={timestamp}, token_prefix={preauth_token[:10]}..."
+    #         )
+    #
+    #     except Exception as e:
+    #         logger.error(f"Preauth computation failed: {str(e)}")
+    #         return TemplateResponse(
+    #             request,
+    #             "password_change/redirect_error.html",
+    #             {"message": "Không thể tạo token xác thực."},
+    #             status=500
+    #         )
+    #
+    #         # ✅ Tạo preauth URL với format ĐÚNG
+    #     zimbra_url = (
+    #         f"https://{hostname}/service/preauth"
+    #         f"?account={urllib.parse.quote(email)}"
+    #         f"&by=name"
+    #         f"&timestamp={timestamp}"
+    #         f"&expires=0"
+    #         f"&preauth={preauth_token}"
+    #     )
+    #     logger.info(f"redirect url: {zimbra_url}")
 
 
 
