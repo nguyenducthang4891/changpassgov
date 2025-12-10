@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-icons.css' %}" rel="stylesheet">
+
+    <!-- 🔒 CRITICAL: No-referrer để Zimbra không nhận Referer header -->
+    <!-- <meta name="referrer" content="no-referrer"> -->
     <meta name="referrer" content="origin">
     <title>Đang chuyển hướng...</title>
 
@@ -45,8 +50,12 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         h2 {
@@ -59,7 +68,51 @@
             font-weight: bold;
             color: #667eea;
             font-size: 1.1rem;
-            margin: 10px 0;
+        }
+
+        .hostname {
+            color: #666;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+
+        .wait-message {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 20px;
+        }
+
+        .manual-link {
+            display: none;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px dashed #e0e0e0;
+        }
+
+        .manual-link p {
+            color: #e74c3c;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .btn-manual {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-manual:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
         }
 
         .security-note {
@@ -71,147 +124,55 @@
             color: #1565C0;
         }
 
-        .btn-continue {
-            display: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 16px 50px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .btn-continue:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn-continue:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-continue:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .manual-text {
-            display: none;
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 15px;
-            line-height: 1.5;
-        }
-
-        .manual-mode .spinner {
-            display: none;
-        }
-
-        .manual-mode h2 {
-            color: #667eea;
-        }
-
-        .manual-mode .btn-continue,
-        .manual-mode .manual-text {
-            display: block;
-        }
-
-        .manual-mode .auto-text {
-            display: none;
+        .security-note i {
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
-<div class="redirect-card" id="redirectCard">
-    <div class="spinner" id="spinner"></div>
+<div class="redirect-card">
+    <div class="spinner"></div>
 
-    <h2 id="title">Đang chuyển hướng</h2>
+    <h2>Đang chuyển hướng</h2>
 
-    <p class="auto-text">Bạn đang được chuyển đến</p>
+    <p>Bạn đang được chuyển đến</p>
     <p class="domain">{{ domain }}</p>
-    <p class="hostname auto-text">{{ hostname }}</p>
+    <p class="hostname">{{ hostname }}</p>
+
+    <p class="wait-message">Vui lòng đợi trong giây lát...</p>
 
     <div class="security-note">
         <i>🔒</i> Kết nối được mã hóa và bảo mật
     </div>
 
-    <button class="btn-continue" id="continueBtn">
-        Tiếp tục đến hộp thư →
-    </button>
-
-    <p class="manual-text">
-        Nhấn nút trên để hoàn tất đăng nhập
-    </p>
+    <!-- Manual link hiện sau 5 giây nếu không tự động redirect -->
+    <!-- <div class="manual-link" id="manualLink">
+            <p>Không tự động chuyển hướng?</p>
+            <a href="" class="btn-manual" id="manualBtn">
+                Nhấn vào đây để tiếp tục
+            </a>
+        </div> -->
 </div>
 
 <script nonce="{{ csp_nonce }}">
     (function () {
+        // 🔒 URL được render từ server, không lộ trong JSON response
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-        const redirectCard = document.getElementById('redirectCard');
-        const continueBtn = document.getElementById('continueBtn');
-        const title = document.getElementById('title');
 
-        console.log('[SSO] Initializing redirect...');
-        console.log('[SSO] Target:', zimbraUrl);
 
-        // Detect mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth >= 768;
+        console.log('[Security] Preparing redirect to Zimbra...');
 
-        console.log('[SSO] Mobile:', isMobile, 'Tablet:', isTablet);
-
-        // Hàm redirect
-        function performRedirect() {
-            console.log('[SSO] Performing redirect...');
+        // 🔒 Auto-redirect sau 2 giây
+        setTimeout(function () {
+            console.log('[Security] Redirecting to Zimbra now...');
             window.location.href = zimbraUrl;
-        }
+        }, 50);
 
-        // Hiện manual mode
-        function showManualMode() {
-            console.log('[SSO] Switching to manual mode');
-            redirectCard.classList.add('manual-mode');
-            title.textContent = 'Nhấn nút để tiếp tục';
-        }
+        // Hiện link manual sau 5 giây nếu chưa redirect
+        // (Trường hợp browser block redirect hoặc lỗi)
 
-        // Mobile/Tablet: BẮT BUỘC user click
-        if (isMobile || isTablet) {
-            console.log('[SSO] Mobile/Tablet detected - requiring manual interaction');
-            setTimeout(showManualMode, 800);
-        } else {
-            // Desktop: Thử auto-redirect
-            console.log('[SSO] Desktop detected - attempting auto-redirect');
-            const autoRedirectTimer = setTimeout(performRedirect, 1500);
 
-            // Fallback: Hiện nút nếu vẫn còn trên trang sau 4 giây
-            setTimeout(function() {
-                if (document.visibilityState === 'visible' &&
-                    window.location.href.indexOf('/auth/redirect/') !== -1) {
-                    console.log('[SSO] Auto-redirect may have failed, showing button');
-                    clearTimeout(autoRedirectTimer);
-                    showManualMode();
-                }
-            }, 4000);
-        }
-
-        // Click handler - User interaction
-        continueBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('[SSO] User clicked continue button');
-            continueBtn.disabled = true;
-            continueBtn.textContent = 'Đang chuyển hướng...';
-            setTimeout(performRedirect, 300);
-        });
-
-        // Prevent back button
+        // Prevent back button after redirect
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function () {
             window.history.pushState(null, "", window.location.href);

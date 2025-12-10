@@ -1,5 +1,3 @@
-# app/views.py - CODE GỐC CỦA BẠN
-
 import re
 from django.shortcuts import render
 import secrets
@@ -33,7 +31,7 @@ async def login_view(request):
     form = LoginForm(request.POST or None)
 
     if request.method == "POST":
-        # Lấy IP để logging và security tracking
+        # 🔒 Lấy IP để logging và security tracking
         ip_address = request.META.get('HTTP_X_FORWARDED_FOR')
         if ip_address:
             ip_address = ip_address.split(',')[0].strip()
@@ -45,11 +43,21 @@ async def login_view(request):
             password = form.cleaned_data["password"]
             domain = extract_domain(email)
 
+            # 🔒 BƯỚC 1: Kiểm tra domain whitelist
+            # if not domain or domain not in ALLOWED_DOMAINS:
+            #     logger.warning(
+            #         f"Unauthorized domain login attempt: domain={domain}, "
+            #         f"email={email}, ip={ip_address}"
+            #     )
+            #     return JsonResponse({
+            #         "success": False,
+            #         "message": "Email hoặc mật khẩu không hợp lệ."
+            #     }, status=401)
+
             hostname = f"mail.{domain}"
             if domain == 'mailpoc.cpt.gov.vn':
-                hostname = 'mailpoc.cpt.gov.vn'
-
-            # Validate hostname format (prevent injection)
+                hostname ='mailpoc.cpt.gov.vn'
+            # 🔒 BƯỚC 2: Validhostnameate hostname format (prevent injection)
             if not hostname.replace('.', '').replace('-', '').isalnum():
                 logger.error(
                     f"Invalid hostname format: hostname={hostname}, "
@@ -60,7 +68,7 @@ async def login_view(request):
                     "message": "Có lỗi xảy ra. Vui lòng thử lại."
                 }, status=400)
 
-            # Authenticate với Zimbra
+            # 🔒 BƯỚC 3: Authenticate với Zimbra
             try:
                 rs = await authenticate_aiohttp(domain, email, password)
             except Exception as e:
@@ -90,8 +98,7 @@ async def login_view(request):
                         "message": "Vui lòng thay đổi mật khẩu",
                         "redirect_url": f"/change-password/?email={email}"
                     }, status=401)
-
-                # Tạo one-time redirect token
+                # 🔒 BƯỚC 4: Tạo one-time redirect token
                 redirect_token = secrets.token_urlsafe(32)
                 cache_key = f"redirect_token:{redirect_token}"
 
@@ -119,18 +126,20 @@ async def login_view(request):
                     f"redirect_to={hostname}"
                 )
 
-                # Trả về URL đến intermediate page
+                # 🔒 BƯỚC 5: Trả về URL đến intermediate page
+                # KHÔNG trả zm_auth_token trong response này
+
                 return JsonResponse({
                     "success": True,
                     "redirect_url": f"/auth/redirect/{redirect_token}"
                 })
 
-            # Login failed
+            # 🔒 Login failed - log và đếm số lần fail
             logger.warning(
                 f"Failed login attempt: email={email}, ip={ip_address}"
             )
 
-            # Đếm số lần fail
+            # Đếm số lần fail để có thể implement account lockout
             fail_key = f"login_fail:{email}"
             try:
                 fail_count = await cache.aget(fail_key, default=0)
@@ -138,6 +147,7 @@ async def login_view(request):
                 await cache.aset(fail_key, fail_count, timeout=3600)
 
                 if fail_count >= 5:
+                    # Chỗ này có nên khóa account
                     logger.error(
                         f"Possible brute force attack: email={email}, "
                         f"failures={fail_count}, ip={ip_address}"
@@ -168,7 +178,7 @@ async def login_view(request):
         }
     )
 
-    # Set CSP header với nonce
+    # 🔒 Set CSP header với nonce
     response['Content-Security-Policy'] = (
         f"default-src 'self'; "
         f"style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
@@ -184,7 +194,7 @@ async def login_view(request):
 @require_http_methods(["GET"])
 async def redirect_intermediate_view(request, token):
     """
-    Intermediate page: Lấy token từ cache và redirect đến Zimbra
+    🔒 Intermediate page: Lấy token từ cache và redirect đến Zimbra
     - Token chỉ dùng được 1 lần
     - Expire sau 60 giây
     - Validate IP nếu cần
@@ -212,13 +222,13 @@ async def redirect_intermediate_view(request, token):
             status=400
         )
 
-    # Xóa token ngay (one-time use)
+    # 🔒 Xóa token ngay (one-time use)
     try:
         await cache.adelete(cache_key)
     except Exception as e:
         logger.error(f"Cache delete error: {str(e)}")
 
-    # Optional: Kiểm tra IP khớp với lúc login
+    # 🔒 Optional: Kiểm tra IP khớp với lúc login
     current_ip = request.META.get('HTTP_X_FORWARDED_FOR')
     if current_ip:
         current_ip = current_ip.split(',')[0].strip()
@@ -231,11 +241,14 @@ async def redirect_intermediate_view(request, token):
             f"login_ip={data.get('ip')}, redirect_ip={current_ip}, "
             f"email={data.get('email')}"
         )
+        # Tuỳ chọn: có thể chặn hoặc cho phép
+        # Ở đây tôi cho phép nhưng ghi log
 
-    # Construct final Zimbra URL
+    # 🔒 Construct final Zimbra URL
     zm_auth_token = data.get('zm_auth_token')
     hostname = data.get('hostname')
     domain = data.get('domain')
+
 
     zimbra_url = (
         f"https://{hostname}/login"
@@ -251,7 +264,7 @@ async def redirect_intermediate_view(request, token):
     # Generate CSP nonce for this page
     csp_nonce = secrets.token_urlsafe(16)
 
-    # Render intermediate page với auto-redirect
+    # 🔒 Render intermediate page với auto-redirect
     response = TemplateResponse(
         request,
         "password_change/redirect_intermediate.html",
@@ -281,7 +294,7 @@ async def change_password(request):
     View để hiển thị form và xử lý đổi mật khẩu
     """
     if request.method == 'GET':
-        email = request.GET.get("email", "")
+        email = request.GET.get("email","")
         return render(request, 'password_change/change_password.html', {'email': email})
 
     # POST request
