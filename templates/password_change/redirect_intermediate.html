@@ -71,21 +71,17 @@
             color: #1565C0;
         }
 
-        /* Button cho manual redirect */
-        .manual-redirect {
-            display: none;
-            margin-top: 30px;
-        }
-
         .btn-continue {
+            display: none;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 15px 40px;
             border: none;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
+            margin-top: 30px;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
@@ -99,15 +95,29 @@
             transform: translateY(0);
         }
 
-        .note {
-            font-size: 0.85rem;
+        .manual-text {
+            display: none;
             color: #666;
+            font-size: 0.9rem;
             margin-top: 15px;
+        }
+
+        .show-manual .spinner {
+            display: none;
+        }
+
+        .show-manual h2 {
+            color: #667eea;
+        }
+
+        .show-manual .btn-continue,
+        .show-manual .manual-text {
+            display: block;
         }
     </style>
 </head>
 <body>
-<div class="redirect-card">
+<div class="redirect-card" id="redirectCard">
     <div class="spinner" id="spinner"></div>
 
     <h2 id="title">Đang chuyển hướng</h2>
@@ -120,50 +130,79 @@
         <i>🔒</i> Kết nối được mã hóa và bảo mật
     </div>
 
-    <!-- Manual redirect button - hiện sau 3 giây -->
-    <div class="manual-redirect" id="manualRedirect">
-        <button class="btn-continue" id="continueBtn">
-            Tiếp tục đến hộp thư
-        </button>
-        <p class="note">Nhấn nút trên để hoàn tất đăng nhập</p>
-    </div>
+    <button class="btn-continue" id="continueBtn">
+        Tiếp tục đến hộp thư →
+    </button>
+
+    <p class="manual-text">
+        Nhấn nút trên để hoàn tất đăng nhập
+    </p>
 </div>
 
 <script nonce="{{ csp_nonce }}">
     (function () {
         const zimbraUrl = "{{ zimbra_url|safe|escapejs }}";
-        let redirectAttempted = false;
+        const redirectCard = document.getElementById('redirectCard');
+        const continueBtn = document.getElementById('continueBtn');
+        const title = document.getElementById('title');
+        let autoRedirected = false;
 
-        console.log('[Security] Preparing redirect to Zimbra...');
+        console.log('[SSO] Starting redirect process...');
+        console.log('[SSO] Target URL:', zimbraUrl);
+        console.log('[SSO] User Agent:', navigator.userAgent);
 
-        // Thử auto-redirect trước
-        const autoRedirectTimer = setTimeout(function () {
-            console.log('[Security] Attempting auto-redirect...');
-            redirectAttempted = true;
+        // Detect mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        console.log('[SSO] Is mobile:', isMobile);
+
+        // Hàm redirect
+        function redirectToZimbra() {
+            console.log('[SSO] Redirecting to Zimbra...');
             window.location.href = zimbraUrl;
-        }, 1500);
+        }
 
-        // Sau 3 giây, hiện nút manual nếu vẫn còn trên trang
-        setTimeout(function() {
-            if (!redirectAttempted || document.visibilityState === 'visible') {
-                console.log('[Security] Auto-redirect may have failed, showing manual button...');
+        // Trên mobile: BẮT BUỘC user click
+        if (isMobile) {
+            console.log('[SSO] Mobile detected - requiring user interaction');
 
-                // Ẩn spinner, đổi title
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('title').textContent = 'Vui lòng tiếp tục';
+            // Hiện nút ngay lập tức cho mobile
+            setTimeout(function() {
+                redirectCard.classList.add('show-manual');
+                title.textContent = 'Vui lòng nhấn nút bên dưới';
+            }, 500);
 
-                // Hiện nút manual
-                document.getElementById('manualRedirect').style.display = 'block';
+        } else {
+            // Desktop: auto-redirect sau 1 giây
+            console.log('[SSO] Desktop detected - auto-redirecting');
 
-                // Clear auto redirect timer
-                clearTimeout(autoRedirectTimer);
-            }
-        }, 3000);
+            setTimeout(function() {
+                if (!autoRedirected) {
+                    autoRedirected = true;
+                    redirectToZimbra();
+                }
+            }, 1000);
 
-        // Manual redirect với user interaction
-        document.getElementById('continueBtn').addEventListener('click', function() {
-            console.log('[Security] Manual redirect triggered by user click...');
-            window.location.href = zimbraUrl;
+            // Backup: hiện nút manual sau 3 giây nếu chưa redirect
+            setTimeout(function() {
+                if (document.visibilityState === 'visible') {
+                    console.log('[SSO] Auto-redirect failed, showing manual button');
+                    redirectCard.classList.add('show-manual');
+                    title.textContent = 'Vui lòng nhấn nút bên dưới';
+                }
+            }, 3000);
+        }
+
+        // Click handler
+        continueBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('[SSO] User clicked continue button');
+
+            // Disable button
+            continueBtn.disabled = true;
+            continueBtn.textContent = 'Đang chuyển...';
+
+            // Redirect with user interaction
+            redirectToZimbra();
         });
 
         // Prevent back button
