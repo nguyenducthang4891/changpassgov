@@ -1,4 +1,6 @@
 import re
+import urllib
+
 from django.shortcuts import render
 import secrets
 
@@ -256,9 +258,11 @@ async def redirect_intermediate_view(request, token):
         f"&domain={domain}"
     )
 
+
+
     logger.info(
         f"Redirecting to Zimbra: email={data.get('email')}, "
-        f"hostname={hostname}, ip={current_ip}"
+        f"hostname={hostname}, ip={current_ip}, url={zimbra_url}"
     )
 
     # Generate CSP nonce for this page

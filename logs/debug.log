@@ -70,3 +70,165 @@
 2025-12-03 09:05:26 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
 2025-12-03 09:05:26 | INFO     | views:login_view:124 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
 2025-12-03 09:05:26 | INFO     | views:redirect_intermediate_view:259 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1
+2025-12-10 13:47:29 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 13:47:30 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mail.nghean.gov.vn/service/soap
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">na1@nghean.gov.vn</account>
+      <password>Mail@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="3392"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_8f9af6295d97608c9679c80614801e01cb588ddf_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383036373335363b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313135313931333730373b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_8f9af6295d97608c9679c80614801e01cb588ddf_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383036373335363b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313135313931333730373b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 13:47:47 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 13:47:47 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
+2025-12-10 13:47:47 | INFO     | views:redirect_intermediate_view:266 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mail.nghean.gov.vn/service/soap
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">na1@nghean.gov.vn</account>
+      <password>Mail@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="3392"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_1d593d77bfbf0338533bef920541c5d382843389_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383038343134343b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313434363131373531303b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_1d593d77bfbf0338533bef920541c5d382843389_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383038343134343b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313434363131373531303b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 13:48:04 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 13:48:04 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
+2025-12-10 13:48:04 | INFO     | views:redirect_intermediate_view:266 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mail.nghean.gov.vn/service/soap
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">na1@nghean.gov.vn</account>
+      <password>Mail@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="3392"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_3f0bedb28afc74a30d6a948c82bbbbbb0378eb7e_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383132363937393b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313534303834333933303b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_3f0bedb28afc74a30d6a948c82bbbbbb0378eb7e_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337383132363937393b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313534303834333933303b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 13:48:47 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 13:48:47 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
+2025-12-10 13:48:47 | INFO     | views:redirect_intermediate_view:266 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1
+2025-12-10 13:49:28 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="653"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_58f1d8a657451e048d7469b67df2b596fb18f2b0_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337383231343935383b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3730373334353033323b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_58f1d8a657451e048d7469b67df2b596fb18f2b0_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337383231343935383b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3730373334353033323b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 13:50:15 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 13:50:15 | INFO     | views:login_view:126 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 13:50:15 | INFO     | views:redirect_intermediate_view:267 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/service/preauth?authtoken=0_58f1d8a657451e048d7469b67df2b596fb18f2b0_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337383231343935383b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3730373334353033323b76657273696f6e3d31353a31302e312e31315f47415f303432353b&isredirect=1
+2025-12-10 14:08:39 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:09:47 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:12:33 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:12:53 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mailpoc.cpt.gov.vn/service/soap
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">admin@mailpoc.cpt.gov.vn</account>
+      <password>Abcd@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="654"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_d6efe3e9970c775dd233515caf378dd88a56383f_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337393539353534303b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3133383437363635393b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_d6efe3e9970c775dd233515caf378dd88a56383f_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337393539353534303b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3133383437363635393b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:13:15 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:13:15 | INFO     | views:login_view:129 | Successful login: email=admin@mailpoc.cpt.gov.vn, ip=127.0.0.1, redirect_to=mailpoc.cpt.gov.vn
+2025-12-10 14:13:15 | INFO     | views:redirect_intermediate_view:295 | Redirecting to Zimbra: email=admin@mailpoc.cpt.gov.vn, hostname=mailpoc.cpt.gov.vn, ip=127.0.0.1, url=https://mailpoc.cpt.gov.vn/login?zm_auth_token=0_d6efe3e9970c775dd233515caf378dd88a56383f_69643d33363a36616664613262352d393261382d346662382d386239332d3938616137393565656635623b6578703d31333a313736353337393539353534303b76763d313a303b747970653d363a7a696d6272613b753d313a613b7469643d393a3133383437363635393b76657273696f6e3d31353a31302e312e31315f47415f303432353b&domain=mailpoc.cpt.gov.vn
+2025-12-10 14:18:19 | INFO     | settings:<module>:156 | Logging initialized - DEBUG mode: True
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mail.nghean.gov.vn/service/soap
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">na1@nghean.gov.vn</account>
+      <password>Mail@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="3394"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_38f8c18d7112e37665ea4be6278be70b91da311e_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337393938373032323b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313538303431303635323b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799998</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_38f8c18d7112e37665ea4be6278be70b91da311e_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337393938373032323b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313538303431303635323b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:19:47 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:19:47 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
+2025-12-10 14:19:47 | INFO     | views:redirect_intermediate_view:264 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1, url=https://mail.nghean.gov.vn/login?zm_auth_token=0_38f8c18d7112e37665ea4be6278be70b91da311e_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353337393938373032323b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313538303431303635323b76657273696f6e3d31353a31302e312e31315f47415f303432353b&domain=nghean.gov.vn
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:110 | [AUTH] URL: https://mail.nghean.gov.vn/service/soap
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:111 | [AUTH] XML:
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header>
+    <context xmlns="urn:zimbra"/>
+  </soap:Header>
+  <soap:Body>
+    <AuthRequest xmlns="urn:zimbraAccount">
+      <account by="name">na1@nghean.gov.vn</account>
+      <password>Mail@123456</password>
+    </AuthRequest>
+  </soap:Body>
+</soap:Envelope>
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:118 | [AUTH] Response Status: 200
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:119 | [AUTH] Response:
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"><soap:Header><context xmlns="urn:zimbra"><change token="3394"/></context></soap:Header><soap:Body><AuthResponse xmlns="urn:zimbraAccount"><authToken>0_17687f50fe223b429741b9217c6a0086c0d589a3_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353338303030393232303b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313931363439323132373b76657273696f6e3d31353a31302e312e31315f47415f303432353b</authToken><lifetime>28799999</lifetime><skin>vnpt1</skin></AuthResponse></soap:Body></soap:Envelope>
+
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:128 | authToken: 0_17687f50fe223b429741b9217c6a0086c0d589a3_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353338303030393232303b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313931363439323132373b76657273696f6e3d31353a31302e312e31315f47415f303432353b
+2025-12-10 14:20:09 | INFO     | auth:authenticate_aiohttp:129 | resetPassword: False
+2025-12-10 14:20:09 | INFO     | views:login_view:126 | Successful login: email=na1@nghean.gov.vn, ip=127.0.0.1, redirect_to=mail.nghean.gov.vn
+2025-12-10 14:20:09 | INFO     | views:redirect_intermediate_view:264 | Redirecting to Zimbra: email=na1@nghean.gov.vn, hostname=mail.nghean.gov.vn, ip=127.0.0.1, url=https://mail.nghean.gov.vn/login?zm_auth_token=0_17687f50fe223b429741b9217c6a0086c0d589a3_69643d33363a30333638636635312d316537362d343663652d616632352d3133396334353064343135323b6578703d31333a313736353338303030393232303b76763d313a333b747970653d363a7a696d6272613b753d313a613b7469643d31303a313931363439323132373b76657273696f6e3d31353a31302e312e31315f47415f303432353b&domain=nghean.gov.vn

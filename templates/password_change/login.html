@@ -3,7 +3,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1024">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Đăng nhập hệ thống">
 
@@ -116,6 +116,11 @@
             margin-top: 0.25rem;
             display: block;
         }
+
+        html, body {
+            min-width: 1024px !important;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -202,95 +207,101 @@
 </div>
 
 <script nonce="{{ csp_nonce }}">
-document.addEventListener("DOMContentLoaded", function() {
-    const form = document.getElementById("loginForm");
-    const btn = document.getElementById("loginBtn");
-    const btnText = document.getElementById("btnText");
-    const btnSpinner = document.getElementById("btnSpinner");
-    const alertContainer = document.getElementById("alertContainer");
-    const emailError = document.getElementById("emailError");
-    const passwordError = document.getElementById("passwordError");
+    document.addEventListener("DOMContentLoaded", function () {
+        //if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        //    let viewport = document.querySelector("meta[name=viewport]");
+        //    if (viewport) {
+        //        viewport.setAttribute("content", "width=1024");
+        //    }
+        //}
+        const form = document.getElementById("loginForm");
+        const btn = document.getElementById("loginBtn");
+        const btnText = document.getElementById("btnText");
+        const btnSpinner = document.getElementById("btnSpinner");
+        const alertContainer = document.getElementById("alertContainer");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
 
-    form.addEventListener("submit", async function(e) {
-        e.preventDefault();
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
 
-        // Clear previous errors
-        emailError.textContent = "";
-        passwordError.textContent = "";
-        alertContainer.innerHTML = "";
+            // Clear previous errors
+            emailError.textContent = "";
+            passwordError.textContent = "";
+            alertContainer.innerHTML = "";
 
-        // Show loading state
-        btn.disabled = true;
-        btnText.classList.add("d-none");
-        btnSpinner.classList.remove("d-none");
+            // Show loading state
+            btn.disabled = true;
+            btnText.classList.add("d-none");
+            btnSpinner.classList.remove("d-none");
 
-        const formData = new FormData(form);
-        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-        try {
-            const response = await fetch("", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest",
-                    "X-CSRFToken": csrfToken
+            try {
+                const response = await fetch("", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": csrfToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 🔒 Redirect đến intermediate page
+                    // URL này KHÔNG chứa zm_auth_token
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Reset button state
+                    btn.disabled = false;
+                    btnText.classList.remove("d-none");
+                    btnSpinner.classList.add("d-none");
+
+                    // Show error message
+                    if (data.message) {
+                        const alertDiv = document.createElement("div");
+                        alertDiv.className = "alert alert-danger alert-dismissible fade show";
+                        alertDiv.role = "alert";
+                        alertDiv.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                        alertContainer.appendChild(alertDiv);
+                    }
+
+                    // Show field errors
+                    if (data.errors) {
+                        if (data.errors.email) {
+                            emailError.textContent = data.errors.email;
+                        }
+                        if (data.errors.password) {
+                            passwordError.textContent = data.errors.password;
+                        }
+                    }
                 }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // 🔒 Redirect đến intermediate page
-                // URL này KHÔNG chứa zm_auth_token
-                window.location.href = data.redirect_url;
-            } else {
+            } catch (error) {
                 // Reset button state
                 btn.disabled = false;
                 btnText.classList.remove("d-none");
                 btnSpinner.classList.add("d-none");
 
-                // Show error message
-                if (data.message) {
-                    const alertDiv = document.createElement("div");
-                    alertDiv.className = "alert alert-danger alert-dismissible fade show";
-                    alertDiv.role = "alert";
-                    alertDiv.innerHTML = `
-                        ${data.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
-                    alertContainer.appendChild(alertDiv);
-                }
-
-                // Show field errors
-                if (data.errors) {
-                    if (data.errors.email) {
-                        emailError.textContent = data.errors.email;
-                    }
-                    if (data.errors.password) {
-                        passwordError.textContent = data.errors.password;
-                    }
-                }
-            }
-        } catch (error) {
-            // Reset button state
-            btn.disabled = false;
-            btnText.classList.remove("d-none");
-            btnSpinner.classList.add("d-none");
-
-            // Show network error
-            const alertDiv = document.createElement("div");
-            alertDiv.className = "alert alert-danger alert-dismissible fade show";
-            alertDiv.role = "alert";
-            alertDiv.innerHTML = `
+                // Show network error
+                const alertDiv = document.createElement("div");
+                alertDiv.className = "alert alert-danger alert-dismissible fade show";
+                alertDiv.role = "alert";
+                alertDiv.innerHTML = `
                 Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet và thử lại.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
-            alertContainer.appendChild(alertDiv);
+                alertContainer.appendChild(alertDiv);
 
-            console.error("Login error:", error);
-        }
+                console.error("Login error:", error);
+            }
+        });
     });
-});
 </script>
 
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
