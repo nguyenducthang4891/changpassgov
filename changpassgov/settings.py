@@ -153,6 +153,16 @@ logger.add(
     enqueue=True,
 )
 
+
+logger.add(
+    "/var/log/changpassgov/info.log",
+    rotation="20 MB",
+    retention=10,
+    compression="zip",
+    level="INFO",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {module}:{function}:{line} | {message}",
+    enqueue=True,
+)
 logger.info(f"Logging initialized - DEBUG mode: {DEBUG}")
 # Static files
 STATIC_URL = '/static/'
